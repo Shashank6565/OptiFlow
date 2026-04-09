@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>OptiFlow | YOLO + C++ Core</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="styles.css" />
+    <script src="tailwind.config.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <script src="script.js" defer></script>
+</head>
+<body class="flex min-h-screen overflow-hidden bg-void text-gray-300">
+    
+    <aside class="flex flex-col sticky top-0 left-0 h-screen w-64 border-r border-neon-blue/20 bg-void z-50">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="w-10 h-10 rounded bg-neon-blue/10 border border-neon-blue/50 flex items-center justify-center shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+                    <span class="material-symbols-outlined text-neon-blue" style="font-variation-settings: 'FILL' 1;">traffic</span>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white font-headline">OptiFlow</h1>
+                    <p class="text-[10px] text-neon-blue font-medium tracking-[0.2em] uppercase">YOLO Edge Node</p>
+                </div>
+            </div>
+            <nav class="space-y-2">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-neon-blue bg-neon-blue/10 border-r-2 border-neon-blue font-manrope text-sm font-medium tracking-tight transition-all">
+                    <span class="material-symbols-outlined">dashboard</span> Dashboard
+                </button>
+                <button onclick="switchTab('analytics')" id="nav-analytics" class="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-gray-500 hover:text-white hover:bg-white/5 border-r-2 border-transparent font-manrope text-sm font-medium tracking-tight transition-all">
+                    <span class="material-symbols-outlined">insights</span> Analytics
+                </button>
+            </nav>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto relative custom-scrollbar bg-void">
+        <header class="w-full h-16 sticky top-0 z-40 bg-void/90 backdrop-blur-xl border-b border-neon-blue/10 flex justify-between items-center px-8">
+            <div class="flex items-center gap-8">
+                <span id="header-title" class="text-lg font-black text-white uppercase font-headline tracking-widest">System Core Overview</span>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div id="live-clock" class="text-sm font-mono text-neon-blue font-bold bg-neon-blue/5 px-3 py-1 rounded border border-neon-blue/20">
+                    00:00:00
+                </div>
+
+                <div class="flex bg-surface-dark rounded p-1 border border-white/5 shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+                    <button id="btn-auto" class="px-4 py-1.5 rounded bg-neon-blue text-void text-[10px] font-black uppercase tracking-tighter transition-all" onclick="setMode('auto')">Auto AI</button>
+                    <button id="btn-manual" class="px-4 py-1.5 rounded text-gray-500 text-[10px] font-black uppercase tracking-tighter transition-all hover:text-white" onclick="setMode('manual')">Manual</button>
+                </div>
+            </div>
+        </header>
+
+        <div id="tab-dashboard" class="p-10 max-w-7xl mx-auto w-full space-y-10 block">
+            
+            <section>
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h2 class="font-headline text-3xl font-extrabold tracking-tight text-white mb-1">Live Telemetry</h2>
+                        <p class="text-gray-500 text-sm font-light uppercase tracking-widest">Sensor Node Alpha-01</p>
+                    </div>
+                </div>
+                <div id="lane-metrics-container" class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    </div>
+            </section>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                <div class="lg:col-span-2 space-y-6">
+                    <h3 class="font-headline text-xl font-bold text-white uppercase tracking-widest">Active Sensor Feeds</h3>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-surface-dark border border-neon-blue/10 rounded overflow-hidden relative aspect-video">
+                            <video src="./assets/traffic-north.mp4" autoplay loop muted class="w-full h-full object-cover opacity-60 mix-blend-screen"></video>
+                            <div class="absolute top-2 left-2 bg-void/80 px-2 py-1 text-[10px] font-mono text-neon-blue border border-neon-blue/30">CAM_N</div>
+                        </div>
+                        <div class="bg-surface-dark border border-neon-red/10 rounded overflow-hidden relative aspect-video">
+                            <video src="./assets/traffic-east.mp4" autoplay loop muted class="w-full h-full object-cover opacity-60 mix-blend-screen"></video>
+                            <div class="absolute top-2 left-2 bg-void/80 px-2 py-1 text-[10px] font-mono text-neon-red border border-neon-red/30">CAM_E</div>
+                        </div>
+                        <div class="bg-surface-dark border border-neon-green/10 rounded overflow-hidden relative aspect-video">
+                            <video src="./assets/traffic-south.mp4" autoplay loop muted class="w-full h-full object-cover opacity-60 mix-blend-screen"></video>
+                            <div class="absolute top-2 left-2 bg-void/80 px-2 py-1 text-[10px] font-mono text-neon-green border border-neon-green/30">CAM_S</div>
+                        </div>
+                        <div class="bg-surface-dark border border-neon-purple/10 rounded overflow-hidden relative aspect-video">
+                            <video src="./assets/traffic-west.mp4" autoplay loop muted class="w-full h-full object-cover opacity-60 mix-blend-screen"></video>
+                            <div class="absolute top-2 left-2 bg-void/80 px-2 py-1 text-[10px] font-mono text-neon-purple border border-neon-purple/30">CAM_W</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-6 h-full">
+                    
+                    <div id="manual-controls" class="hidden bg-surface-dark rounded-lg p-6 border border-neon-red/30 shadow-[0_0_15px_rgba(255,0,60,0.1)]">
+                        <h3 class="font-headline text-sm font-bold text-neon-red uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">warning</span> Override Active
+                        </h3>
+                        <div id="override-buttons" class="grid grid-cols-2 gap-3">
+                            </div>
+                    </div>
+
+                    <div class="bg-surface-dark rounded-lg p-8 flex flex-col flex-1 border border-white/5 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-neon-blue/5 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="mb-8 flex justify-between items-end relative z-10">
+                            <div>
+                                <h3 class="font-headline text-xl font-bold text-white mb-1 uppercase tracking-widest">Active Sequence</h3>
+                                <p id="system-status-text" class="text-xs text-neon-blue">DAA Engine Running</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Phase Time</p>
+                                <span id="live-timer" class="text-3xl font-headline font-black text-white">00</span><span id="timer-label" class="text-sm text-gray-500">s</span>
+                            </div>
+                        </div>
+                        <div id="cycle-results-container" class="space-y-4 flex-1 relative z-10">
+                            </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-analytics" class="p-10 max-w-7xl mx-auto w-full space-y-10 hidden">
+            <div class="mb-6">
+                <h2 class="font-headline text-3xl font-extrabold tracking-tight text-white mb-1">Volume Analysis</h2>
+                <p class="text-gray-500 text-sm font-light uppercase tracking-widest">Aggregated Real-Time Traffic Data</p>
+            </div>
+
+            <div class="bg-surface-dark p-6 rounded-lg border border-white/5 w-full shadow-[0_4px_24px_rgba(0,0,0,0.5)]">
+                <h3 class="font-headline text-sm font-bold text-white uppercase tracking-widest mb-6">Traffic Volume (Past 7 Hours)</h3>
+                <div style="position: relative; height: 400px; width: 100%;">
+                    <canvas id="volumeBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
